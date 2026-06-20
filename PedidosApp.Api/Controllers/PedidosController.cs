@@ -1,0 +1,92 @@
+﻿using Azure.Core;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PedidosApp.Api.Commands;
+
+
+namespace PedidosApp.Api.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class PedidosController(IMediator mediator) : ControllerBase {
+
+    [HttpPost]
+    public async Task<IActionResult> PostPedidosAsync([FromBody] PedidoCreateCommand command) {
+
+        try {
+
+            await mediator.Send(command);
+
+            return StatusCode(201, command);
+
+        } catch {
+
+            throw;
+        }
+
+    }
+
+    [HttpPatch]
+    public async Task<IActionResult> PatchPedidosAsync([FromBody] PedidoUpdateCommand command) {
+
+        try {
+
+            await mediator.Send(command);
+
+            return Ok(command);
+
+        } catch {
+
+            throw;
+        }
+
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllPedidosAsync() {
+
+        try {
+
+            return Ok();
+        } catch {
+
+            throw;
+        }
+
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetByIdPedidoAsync(Guid id) {
+
+        try {
+
+            return Ok();
+        } catch {
+
+            throw;
+        }
+
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePedidoAsync(Guid id) {
+
+        try {
+
+            var command = new PedidoDeleteCommand { Id = id };
+
+            await mediator.Send(command);
+
+            return NoContent();
+
+        } catch {
+
+            throw;
+        }
+
+    }
+
+
+}
+

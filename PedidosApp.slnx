@@ -1,6 +1,8 @@
 <Solution>
+  <Folder Name="/1 - API/">
+    <Project Path="PedidosApp.Api/PedidosApp.Api.csproj" />
+  </Folder>
   <Folder Name="/Itens de Solução/">
     <File Path="docker-compose.yml" />
   </Folder>
-  <Project Path="PedidosApp.Api/PedidosApp.Api.csproj" />
 </Solution>
