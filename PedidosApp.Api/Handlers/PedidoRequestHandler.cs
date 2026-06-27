@@ -2,10 +2,12 @@
 using PedidosApp.Api.Commands;
 using PedidosApp.Api.Contexts;
 using PedidosApp.Api.Entities;
+using PedidosApp.Api.Models;
+using PedidosApp.Api.Notifications;
 
 namespace PedidosApp.Api.Handlers;
 
-public class PedidoRequestHandler(SqlServerContext context) :
+public class PedidoRequestHandler(SqlServerContext context, PedidoNotificationHandler notification, IMediator mediator) :
     IRequestHandler<PedidoCreateCommand>,
     IRequestHandler<PedidoUpdateCommand>,
     IRequestHandler<PedidoDeleteCommand> {
@@ -21,6 +23,20 @@ public class PedidoRequestHandler(SqlServerContext context) :
 
         await context.AddAsync(pedido, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
+
+        var notification = new PedidoNotification {
+            Action = ActionNotification.PedidoCriado,
+            Pedidos = new Pedidos {
+                Id = pedido.Id.ToString(),
+                NomeCliente = pedido.NomeCliente,
+                Valor = pedido.Valor,
+                Observacoes = pedido.Observacoes,
+                DataPedido = pedido.DataPedido,
+                DataExclusao = pedido.DataExclusao
+            }
+        };
+
+        await mediator.Publish(notification);
     }
 
     public async Task Handle(PedidoUpdateCommand request, CancellationToken cancellationToken) {
@@ -42,6 +58,20 @@ public class PedidoRequestHandler(SqlServerContext context) :
         context.Update(pedido);
         await context.SaveChangesAsync(cancellationToken);
 
+        var notification = new PedidoNotification {
+            Action = ActionNotification.PedidoAlterado,
+            Pedidos = new Pedidos {
+                Id = pedido.Id.ToString(),
+                NomeCliente = pedido.NomeCliente,
+                Valor = pedido.Valor,
+                Observacoes = pedido.Observacoes,
+                DataPedido = pedido.DataPedido,
+                DataExclusao = pedido.DataExclusao
+            }
+        };
+
+        await mediator.Publish(notification);
+
     }
 
     public async Task Handle(PedidoDeleteCommand request, CancellationToken cancellationToken) {
@@ -52,6 +82,14 @@ public class PedidoRequestHandler(SqlServerContext context) :
         context.Update(pedido);
         await context.SaveChangesAsync(cancellationToken);
 
+        var notification = new PedidoNotification {
+            Action = ActionNotification.PedidoExcluído,
+            Pedidos = new Pedidos {
+                Id = pedido.Id.ToString()
+            }
+        };
+
+        await mediator.Publish(notification);
     }
 }
 
